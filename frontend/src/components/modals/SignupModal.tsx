@@ -32,8 +32,7 @@ const SignupModal = () => {
     } = useForm<FieldValues>({
         defaultValues: {
             email: '',
-            password: '',
-            role: 'candidate'
+            password: ''
         }
     });
 
@@ -78,7 +77,7 @@ const onSubmit: SubmitHandler<FieldValues> = (data) => {
     const footerContent = (
         <div className="flex flex-col gap-4 mt-3">
             <hr className="border-neutral-200" />
-            <Button outline label="Continue with Google" icon={FcGoogle} onClick={() => () => window.location.href = "http://localhost:8000/auth/google/login/"}/>
+            <Button outline label="Continue with Google" icon={FcGoogle} onClick={() => window.location.href = "http://localhost:8000/auth/google/login/"}/>
             <div className="text-neutral-500 text-center mt-4 font-light">
                 <div className="justify-center flex flex-row items-center gap-2">
                     <div>
