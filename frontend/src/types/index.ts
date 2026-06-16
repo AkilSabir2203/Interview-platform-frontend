@@ -1,10 +1,33 @@
-export interface SafeUser {
+export interface CandidateUser {
     id: number;              // Django usually uses integers for IDs
     email: string;
+    role: string;
     firstname: string | null;
     lastname: string | null;
-    image?: string | null;   // Optional, if you have user avatars
-    emailVerified?: string | null;
-    createdAt: string;       // Sent as an ISO string from Django
-    updatedAt: string;       // Sent as an ISO string from Django
+    phone: string | null;
+    image?: string | null;   
+    createdAt: string;      
+    updatedAt: string;       
+}
+
+export interface InterviewerUser {
+    id: number;             
+    email: string;
+    role: string;
+    firstname: string | null;
+    lastname: string | null;
+    company: string | null;
+    position: string | null;
+    phone: string | null;
+    image?: string | null;
+    rating: 1 | 2 | 3 | 4 | 5 | null;  
+    skills: [];
+    createdAt: string;      
+    updatedAt: string;       
+}
+
+export interface User {
+    id: number;              // Django usually uses integers for IDs
+    email: string;
+    role: string;
 }

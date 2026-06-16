@@ -15,6 +15,8 @@ import Practice from './components/pages/Practice'
 
 import LoginModal from './components/modals/LoginModal'
 import SignupModal from './components/modals/SignupModal'
+import AuthProvider from './components/AuthProvider'
+import ProtectedRoute from './routes/ProtectedRoute'
 
 // 3. Create the Router Configuration
 const router = createBrowserRouter([
@@ -32,11 +34,26 @@ const router = createBrowserRouter([
     ),
     children: [
       { path: "/", element: <Landing /> }, 
-      { path: "/practice", element: <Practice /> },
-      { path: "/experiences", element: <Experiences /> },
       { path: "/discussions", element: <Discussions /> },
-      { path: "/user/login", element: <LoginModal /> },
-      { path: "/user/signup", element: <SignupModal /> },
+      { path: "/auth/login", element: <LoginModal /> },
+      { path: "/auth/signup", element: <SignupModal /> },
+// 2. WRAP THE PAGES YOU WANT TO PROTECT LIKE THIS:
+      { 
+        path: "/practice", 
+        element: (
+          <ProtectedRoute allowedRoles={['candidate']}>
+            <Practice />
+          </ProtectedRoute>
+        ) 
+      },
+      { 
+        path: "/experiences", 
+        element: (
+          <ProtectedRoute allowedRoles={['candidate']}>
+            <Experiences />
+          </ProtectedRoute>
+        ) 
+      },
     ]
   },
   {
@@ -50,6 +67,8 @@ const router = createBrowserRouter([
 // 4. Render the Router
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <RouterProvider router={router} />
+    <AuthProvider>
+      <RouterProvider router={router} />
+    </AuthProvider>
   </StrictMode>,
 )

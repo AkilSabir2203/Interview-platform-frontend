@@ -58,7 +58,7 @@ const Button: React.FC<ButtonProps> = ({
       >
          {label}
          {!textOnly && Icon && (
-            <Icon size={24} className="absolute right-4 top-3" />
+            <Icon size={24} className="absolute right-4 top-1/2 -translate-y-1/2" />
          )}
       </button>
    );

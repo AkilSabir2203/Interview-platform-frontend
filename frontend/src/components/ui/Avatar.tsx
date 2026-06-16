@@ -7,7 +7,7 @@ const Avatar: React.FC<AvatarProps> = ({
 }) => {
   return (
   <img
-    className="rounded-full"
+    className="rounded-full object-cover"
     height="30"
     width="30"
     alt="Avatar"

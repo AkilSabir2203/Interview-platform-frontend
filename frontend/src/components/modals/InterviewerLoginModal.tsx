@@ -1,4 +1,4 @@
-import api from "../../libs/axois";
+import axios from "../../libs/axois";
 import { useNavigate } from "react-router-dom";
 import { FcGoogle} from "react-icons/fc";
 import { useCallback, useState } from "react";
@@ -17,12 +17,12 @@ import toast from "react-hot-toast";
 import Button from "../ui/Button";
 
 const LoginModal = () => {
-    const navigate = useNavigate();
 
-    const { loginContextSync } = useAuth();
+    const navigate = useNavigate(); 
+    const { setAuthData } = useAuth();
+    const interviewersignupModal = useSignupModal();
+    const interviewerloginModal = useLoginModal();
 
-    const signupModal = useSignupModal();
-    const loginModal = useLoginModal();
     const [isLoading, setIsLoading] = useState(false);
 
     const {
@@ -41,33 +41,32 @@ const LoginModal = () => {
     const onSubmit: SubmitHandler<FieldValues> = (data) => {
         setIsLoading(true);
 
-        api.post('/api/v1/auth/login', data)
+        axios.post('/api/v1/auth/interviwerlogin/', data)
             .then((response) => {
                 toast.success('Logged in successfully!');
                 
-                // Destructure your synchronized payload parameters matching schemas.AuthResponse exactly
-                const { access_token, user } = response.data;
+                const token = response.data.authToken || response.data.token;
+                const user = response.data.user;
                 
-                // Commits access_token straight into running React RAM state memory
-                loginContextSync(access_token, user); 
-                
+                setAuthData(token, user);
+
                 navigate("/");
-                loginModal.onClose();
-            }) // 💡 FIX: Removed the stray semicolon here that was breaking your compilation chain!
+                interviewerloginModal.onClose();
+            })
             .catch((error) => {
-                // Catch FastAPI's default Exception details object payload 
-                const errorMsg = error.response?.data?.detail || 'Invalid credentials';
-                toast.error(errorMsg);
+                // Safely handle errors (e.g., wrong password)
+                toast.error(error.response?.data?.error || 'Invalid credentials');
             })
             .finally(() => {
+                // Ensure loading state is turned off whether it succeeds or fails
                 setIsLoading(false); 
             });
-    };
+    }
 
     const toggle = useCallback(() => {
-        loginModal.onClose();
-        signupModal.onOpen();
-    }, [loginModal,signupModal]);
+        interviewerloginModal.onClose();
+        interviewersignupModal.onOpen();
+    }, [interviewerloginModal,interviewersignupModal]);
 
     const bodyContent = (
         <div className="flex flex-col gap-4">
@@ -80,7 +79,7 @@ const LoginModal = () => {
     const footerContent = (
         <div className="flex flex-col gap-4 mt-3">
             <hr className="border-neutral-200" />
-            <Button outline label="Continue with Google" icon={FcGoogle} onClick={() => "http://127.0.0.1:8000/auth/google/login/"}/>
+            <Button outline label="Continue with Google" icon={FcGoogle} onClick={() => "http://localhost:8000/auth/google/login/"}/>
             <div className="text-neutral-500 text-center mt-4 font-light">
                 <div className="justify-center flex flex-row items-center gap-2">
                     <div>
@@ -95,7 +94,7 @@ const LoginModal = () => {
     )
 
     return (
-        <Modal disabled={isLoading} isOpen={loginModal.isOpen} title="Login" actionLabel="Continue" onClose={loginModal.onClose} onSubmit={handleSubmit(onSubmit)} body={bodyContent} footer={footerContent}/>
+        <Modal disabled={isLoading} isOpen={interviewerloginModal.isOpen} title="Login" actionLabel="Continue" onClose={interviewerloginModal.onClose} onSubmit={handleSubmit(onSubmit)} body={bodyContent} footer={footerContent}/>
     );
 }
 

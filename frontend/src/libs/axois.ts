@@ -1,12 +1,12 @@
 import axios from "axios";
 
-const axiosInstance = axios.create({
-    baseURL: "http://localhost:8000", // Your Django URL
-    withCredentials: true,            // CRITICAL: Allows Django session cookies to be saved in the browser
+const api = axios.create({
+    // 💡 CHANGE THIS from 127.0.0.1 to localhost so it matches your browser address bar!
+    baseURL: "http://localhost:8000", 
+    withCredentials: true
 });
 
-// Automatically attach Django's CSRF token if it exists in the browser cookies
-axiosInstance.interceptors.request.use(function (config) {
+api.interceptors.request.use((config) => {
     const match = document.cookie.match(new RegExp('(^| )csrftoken=([^;]+)'));
     if (match) {
         config.headers['X-CSRFToken'] = match[2];
@@ -14,4 +14,4 @@ axiosInstance.interceptors.request.use(function (config) {
     return config;
 });
 
-export default axiosInstance;
+export default api;
