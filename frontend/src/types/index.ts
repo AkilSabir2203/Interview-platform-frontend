@@ -26,8 +26,9 @@ export interface InterviewerUser {
     updatedAt: string;       
 }
 
-export interface User {
-    id: number;              // Django usually uses integers for IDs
-    email: string;
-    role: string;
-}
+export type User = { 
+    id: string,
+    email: string,
+    role: string,
+    hasCompletedOnboarding: boolean
+};

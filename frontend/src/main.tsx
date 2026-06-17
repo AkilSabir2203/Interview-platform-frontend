@@ -17,6 +17,7 @@ import LoginModal from './components/modals/LoginModal'
 import SignupModal from './components/modals/SignupModal'
 import AuthProvider from './components/AuthProvider'
 import ProtectedRoute from './routes/ProtectedRoute'
+import CandidateOnboarding from './components/pages/CandidateOnboarding'
 
 // 3. Create the Router Configuration
 const router = createBrowserRouter([
@@ -37,7 +38,14 @@ const router = createBrowserRouter([
       { path: "/discussions", element: <Discussions /> },
       { path: "/auth/login", element: <LoginModal /> },
       { path: "/auth/signup", element: <SignupModal /> },
-// 2. WRAP THE PAGES YOU WANT TO PROTECT LIKE THIS:
+      { 
+        path: "/auth/onboard-candidate",
+        element: (
+          <ProtectedRoute allowedRoles={['candidate']}>
+            <CandidateOnboarding />
+          </ProtectedRoute>
+        ) 
+      },
       { 
         path: "/practice", 
         element: (

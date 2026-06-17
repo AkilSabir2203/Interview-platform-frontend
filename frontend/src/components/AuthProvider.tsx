@@ -20,100 +20,31 @@ export default function AuthProvider({children}: AuthProviderProps) {
     const [currentUser, setCurrentUser] = useState<User | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
-    // useEffect(() => {
-    //     const fetchMe = async () => {
-    //         try {
-    //             const response = await api.get('api/me');
-    //             setToken(response.data.accessToken);
-    //         } catch {
-    //             setToken(null);
-    //         }
-    //     };
-
-    //     fetchMe();
-    // }, []);
-
-    // useLayoutEffect(() => {
-    //     const authInterceptor = api.interceptors.request.use((config) => {
-    //         config.headers.Authorization = 
-    //             !config._retry && token
-    //                 ? 'Bearer ${token}'
-    //                 : config.headers.Authorization;
-    //         return config;
-    //     });
-    //     return () => {
-    //         api.interceptors.request.eject(authInterceptor);
-    //     };
-    // }, [token]);
-
-    // useLayoutEffect(() => {
-    //     const refreshInterceptors = api.interceptors.response.use(
-    //         (response) => response,
-    //         async (error) => {
-    //             const originalRequest = error.config;
-
-    //             if(
-    //                 error.response.status === 401 && 
-    //                 error.response.data.message === 'Unauthorized'
-    //             ) {
-    //                 try {
-    //                     const response = await api.get('/api/refreshToken');
-
-    //                     setToken(response.data.accessToken);
-
-    //                     originalRequest.headers.Authorization = `Bearer ${response.data.accessToken}`;
-    //                     originalRequest._retry = true;
-
-    //                     return api(originalRequest);
-    //                 } catch {
-    //                     setToken(null);
-    //                 }
-    //             }
-    //             return Promise.reject(error);
-    //         }
-    //     )
-    //     return () => {
-    //         api.interceptors.request.eject(refreshInterceptors);
-    //     };
-    // })
-
-    useEffect(() => {
-        async function bootstrapSession() {
-            try {
-                const refreshResponse = await api.post("/api/v1/auth/refresh");
-                const newAccessToken = refreshResponse.data.access_token;
-
-                setAuthToken(newAccessToken);
-                
-                try {
-
-                    const profileResponse = await api.post("/api/v1/auth/me", {}, {
-                        headers: { Authorization: `Bearer ${newAccessToken}` }
-                    });
-                    
-                    setCurrentUser(profileResponse.data);
-                } catch (profileError: any) {
-                    if (profileError.response?.status === 403) {
-                        console.log("Session verified! User needs onboarding.");
-                        
-                        // Set a fallback user object containing data parsed from the response if available
-                        // This keeps isAuthenticated true so they stay on the onboarding screen!
-                        setCurrentUser(profileError.response.data.user || { id: "onboarding_pending" } as any);
-                    } else {
-                        // It's a genuine 401 or network error, blow up to the outer catch
-                        throw profileError;
-                    }
-                }    
-            } catch (error) {
-                console.error("Session bootstrapping completely failed:", error);
-                setAuthToken(null);
-                setCurrentUser(null);
-            } finally {
-                setIsLoading(false);
-            }
+useEffect(() => {
+    async function bootstrapSession() {
+        try {
+            const refreshResponse = await api.post("/api/v1/auth/refresh");
+            const newAccessToken = refreshResponse.data.access_token;
+            setAuthToken(newAccessToken);
+            
+            // Because /me now returns 200 OK even if onboarding isn't done, 
+            // we don't need the messy 403 catch block anymore!
+            const profileResponse = await api.post("/api/v1/auth/me", {}, {
+                headers: { Authorization: `Bearer ${newAccessToken}` }
+            });
+            
+            setCurrentUser(profileResponse.data);
+            
+        } catch (error) {
+            console.error("Session bootstrapping failed:", error);
+            setAuthToken(null);
+            setCurrentUser(null);
+        } finally {
+            setIsLoading(false);
         }
-        bootstrapSession();
-    }, []);
+    }
+    bootstrapSession();
+}, []);
 
     useLayoutEffect(() => {
         const authInterceptor = api.interceptors.request.use((config) => {
@@ -195,3 +126,4 @@ export function useAuth() {
     }
     return context;
 }
+

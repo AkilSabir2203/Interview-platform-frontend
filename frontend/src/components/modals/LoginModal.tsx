@@ -51,7 +51,7 @@ const LoginModal = () => {
                 // Commits access_token straight into running React RAM state memory
                 loginContextSync(access_token, user); 
                 
-                navigate("/");
+                navigate("/practice");
                 loginModal.onClose();
             }) // 💡 FIX: Removed the stray semicolon here that was breaking your compilation chain!
             .catch((error) => {

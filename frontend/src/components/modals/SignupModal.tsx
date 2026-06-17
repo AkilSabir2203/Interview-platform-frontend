@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import api from "../../libs/axois";
 import { FcGoogle} from "react-icons/fc";
 import { useCallback, useState } from "react";
@@ -21,6 +22,8 @@ const SignupModal = () => {
 
     const { loginContextSync } = useAuth();
 
+    const navigate = useNavigate();
+
     const [isLoading, setIsLoading] = useState(false);
 
     const {
@@ -36,21 +39,21 @@ const SignupModal = () => {
         }
     });
 
-const onSubmit: SubmitHandler<FieldValues> = (data) => {
+    const onSubmit: SubmitHandler<FieldValues> = (data) => {
         setIsLoading(true);
 
-        // 💡 FIX: Adjusted to your explicit FastAPI register route path (No trailing slash!)
         api.post('/api/v1/auth/register', data) 
             .then((response) => {
                 toast.success('Account created successfully!');
                 
-                // Extract structural data from schemas.AuthResponse shape
                 const { access_token, user } = response.data;
-                
-                // Synchronize tokens straight into active state RAM
                 loginContextSync(access_token, user);
                 
                 signupModal.onClose();
+                
+                // 💡 ADD THIS: Push them to the app!
+                // ProtectedRoute will instantly catch them and redirect to onboarding
+                navigate('/practice'); 
             })
             .catch((error) => {
                 const errorMsg = error.response?.data?.detail || "Registration failed!";
