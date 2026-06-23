@@ -16,8 +16,14 @@ import Practice from './components/pages/Practice'
 import LoginModal from './components/modals/LoginModal'
 import SignupModal from './components/modals/SignupModal'
 import AuthProvider from './components/AuthProvider'
+
 import ProtectedRoute from './routes/ProtectedRoute'
+import ProfileGateway from './routes/ProfileGateway'
+
 import CandidateOnboarding from './components/pages/CandidateOnboarding'
+import InterviewerOnboarding from './components/pages/InterviewerOnboarding'
+
+import ToasterProvider from './components/ToasterProvider'
 
 // 3. Create the Router Configuration
 const router = createBrowserRouter([
@@ -47,9 +53,18 @@ const router = createBrowserRouter([
         ) 
       },
       { 
+        // 👈 Added Interviewer Onboarding Route block
+        path: "/auth/onboard-interviewer",
+        element: (
+          <ProtectedRoute allowedRoles={['interviewer']}>
+            <InterviewerOnboarding />
+          </ProtectedRoute>
+        ) 
+      },
+      { 
         path: "/practice", 
         element: (
-          <ProtectedRoute allowedRoles={['candidate']}>
+          <ProtectedRoute allowedRoles={['candidate','interviewer']}>
             <Practice />
           </ProtectedRoute>
         ) 
@@ -59,6 +74,14 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute allowedRoles={['candidate']}>
             <Experiences />
+          </ProtectedRoute>
+        ) 
+      },
+      { 
+        path: "/profile", 
+        element: (
+          <ProtectedRoute allowedRoles={['candidate', 'interviewer']}>
+            <ProfileGateway />
           </ProtectedRoute>
         ) 
       },
@@ -75,8 +98,9 @@ const router = createBrowserRouter([
 // 4. Render the Router
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <AuthProvider>
-      <RouterProvider router={router} />
-    </AuthProvider>
+      <AuthProvider>
+        <ToasterProvider />
+        <RouterProvider router={router} />
+      </AuthProvider>
   </StrictMode>,
 )

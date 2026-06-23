@@ -13,6 +13,7 @@
     "@tailwindcss/vite": "^4.3.0",
     "axios": "^1.17.0",
     "react": "^19.2.6",
+    "react-autocomplete-tagbox": "^1.0.1",
     "react-dom": "^19.2.6",
     "react-hook-form": "^7.79.0",
     "react-hot-toast": "^2.6.0",
