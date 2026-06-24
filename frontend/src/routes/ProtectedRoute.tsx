@@ -1,5 +1,5 @@
 import { Navigate, useLocation, Outlet } from "react-router-dom";
-import { useAuth } from "../components/AuthProvider"; // Adjust path if needed
+import { useAuth } from "../components/AuthProvider"; 
 import type { PropsWithChildren } from "react";
 
 type ProtectedRouteProps = PropsWithChildren<{
@@ -10,43 +10,54 @@ export default function ProtectedRoute({ children, allowedRoles }: ProtectedRout
   const { isAuthenticated, isLoading, currentUser } = useAuth();
   const location = useLocation();
 
-  // 1. Wait for /me to finish checking the session
+  // 1. Freeze component tree rendering while user context initializes
   if (isLoading) {
-    return <div className="flex justify-center p-10">Loading application...</div>;
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-neutral-50 p-10">
+        <div className="text-center space-y-2">
+          <div className="w-8 h-8 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <p className="text-sm font-semibold text-neutral-500 animate-pulse">Loading application...</p>
+        </div>
+      </div>
+    );
   }
 
-  // 2. Unauthenticated users get kicked to login
+  // 2. Clear unauthenticated sessions out to Auth forms
   if (!isAuthenticated || !currentUser) {
     return <Navigate to="/auth/login" state={{ from: location }} replace />;
   }
 
-  // 3. Optional: Role-based access (e.g., stopping candidates from hitting interviewer pages)
-  if (allowedRoles && !allowedRoles.includes(currentUser.role)) {
-    return <Navigate to="/" replace />; 
-  }
-
-  // --- THE ONBOARDING LOCKDOWN LOGIC ---
-
+  // 3. Track operational routes
   const isOnboardingRoute = location.pathname.includes('/onboard');
 
+  // 4. Handle Role Access Control Boundaries
+  if (allowedRoles && !allowedRoles.includes(currentUser.role)) {
+    if (!currentUser.hasCompletedOnboarding) {
+      const targetOnboardingPath = currentUser.role === "interviewer" 
+        ? "/auth/onboard-interviewer" 
+        : "/auth/onboard-candidate";
+      return <Navigate to={targetOnboardingPath} replace />;
+    }
+    return <Navigate to="/practice" replace />; 
+  }
+
+  // 5. Enforce Onboarding Machine State
   if (!currentUser.hasCompletedOnboarding) {
-    // If they haven't finished, and they are trying to visit ANY page other than their specific onboarding page...
     if (!isOnboardingRoute) {
-      // Force them to their specific role's onboarding page
       const targetOnboardingPath = currentUser.role === "interviewer" 
         ? "/auth/onboard-interviewer" 
         : "/auth/onboard-candidate";
         
+      console.warn(`🔒 Access Denied. Redirecting un-onboarded ${currentUser.role} to tracking setup.`);
       return <Navigate to={targetOnboardingPath} replace />;
     }
   } else {
-    // If they HAVE finished onboarding, and they try to go back to the onboarding page...
+    // Prevent onboarded profiles from regressing back into onboarding steps
     if (isOnboardingRoute) {
-      // Kick them out to the dashboard/practice area
       return <Navigate to="/practice" replace />; 
     }
   }
 
-  // If they pass all checks, render the protected page
+  // 6. Everything checks out perfectly -> Render requested viewport tree
   return children ? <>{children}</> : <Outlet />;
 }

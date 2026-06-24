@@ -58,13 +58,13 @@ const CandidateProfile = () => {
         <div className="bg-white rounded-3xl border border-neutral-200 shadow-xl overflow-hidden">
           
           {/* Header Banner Accenting Vector Block */}
-          <div className="h-32 bg-gradient-to-r from-purple-600 to-indigo-600" />
+          <div className="h-32 bg-linear-to-r from-purple-600 to-indigo-600" />
 
           {/* User Metrics Info Layout Content Block */}
           <div className="px-8 pb-8 relative">
             
             {/* Hanging Identity Monogram Wrapper Box */}
-            <div className="absolute -top-14 left-8 h-24 w-24 rounded-2xl bg-purple-700 text-white font-black text-4xl border-4 border-white shadow-md flex items-center justify-center select-none tracking-tighter">
+            <div className="absolute -top-14 left-8 h-24 w-24 rounded-full bg-purple-700 text-white font-black text-4xl border-4 border-white shadow-md flex items-center justify-center select-none tracking-tighter">
               {initialSymbol}
             </div>
 

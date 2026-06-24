@@ -86,7 +86,7 @@ export default function InterviewerProfile() {
                      </p>
                      {profile.phone && (
                         <p className="text-xs text-neutral-400 font-medium tracking-tight">
-                           Index Link: {profile.phone}
+                           Phone: {profile.phone}
                         </p>
                      )}
                   </div>

@@ -826,15 +826,10 @@ import { useAuth } from "../AuthProvider";
 import Button from "../ui/Button";
 import { AVAILABLE_SKILLS } from "../../utils/constants";
 
-// Generate 30-minute incremental time slots from 10:00 AM (10:00) to 10:00 PM (22:00)
 const generateTimeSlots = (): string[] => {
    const slots: string[] = [];
    for (let h = 10; h <= 22; h++) {
-      const hourStr = String(h).padStart(2, '0');
-      slots.push(`${hourStr}:00`);
-      if (h !== 22) {
-         slots.push(`${hourStr}:30`);
-      }
+      slots.push(`${String(h).padStart(2, "0")}:00`); 
    }
    return slots;
 };
@@ -1017,7 +1012,7 @@ export default function InterviewerOnboarding() {
          }
 
          setTimeout(() => {
-            navigate("/practice"); 
+            navigate("/"); 
          }, 50);
 
       } catch (error: any) {

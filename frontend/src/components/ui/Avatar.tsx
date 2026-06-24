@@ -78,14 +78,10 @@ const Avatar: React.FC<AvatarProps> = ({ src, name }) => {
   if (src && src.trim() !== "" && !imageError) {
     return (
       <img
-        className="rounded-full object-cover border border-neutral-200 select-none shadow-sm"
-        height="30"
-        width="30"
+        className="rounded-full w-7.5 h-7.5 object-cover shrink-0 border border-neutral-200 select-none shadow-sm"
         alt={name || "Avatar"}
         src={src}
         onError={() => {
-          // 🛡️ Safe State Transition: If the image link breaks, trigger state mutation 
-          // to cleanly switch the entire render tree branch over to Strategy B!
           setImageError(true);
         }}
       />
